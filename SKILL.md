@@ -15,19 +15,23 @@ The Relevance AI MCP integration enables building and managing AI agent systems.
 
 ### Step 0: Set up Relevance AI MCP (if not already configured)
 
-If the `relevance-ai` MCP server is not connected, pause and help the user set it up:
+Skip straight to Step 1 if the MCP server might already be configured — the only reliable way to check is to call an actual MCP tool.
 
-1. Add the MCP server: `codex mcp add relevance-ai --url https://mcp.relevanceai.com/`
-2. Authenticate: `codex mcp login relevance-ai` — this opens a browser OAuth flow.
-3. **IMPORTANT: The user MUST fully restart Codex after completing OAuth login.** MCP auth tokens are not picked up until restart. If you skip this, all MCP tool calls will fail with auth errors.
+If MCP tool calls fail because the server is not configured, help the user add it. See `reference/setup.md` for setup instructions by tool.
 
-Tell the user: "Please restart Codex now. After restarting, ask me again and I'll continue."
+After setup, the user may need to restart their tool (e.g. Codex requires a full restart after OAuth login for auth tokens to take effect).
 
-**Do NOT attempt to call any MCP tools until the user has restarted and returned.**
+**Do NOT attempt to call any MCP tools until the user confirms they have restarted.**
+
+#### Codex-specific note
+
+**Do NOT use `codex mcp list` to check authentication status.** Remote MCP servers like Relevance AI will show `Auth: Unsupported` in the CLI — this is normal and does NOT mean auth has failed. The CLI cannot detect OAuth state for remote servers. Ignore this status and try calling an actual MCP tool instead.
+
+**Never re-run `codex mcp login` if the user says they already completed OAuth.** If MCP calls return auth errors after the user has authenticated, tell them to restart Codex — do not open a second login flow.
 
 ### Step 1: Verify connectivity
 
-Run `relevance-ai:relevance_list_agents` and `relevance-ai:relevance_list_tools` to confirm the MCP connection is working. If either returns an auth error, the user needs to restart Codex (or re-run `codex mcp login relevance-ai` and restart again).
+Call `relevance-ai:relevance_list_agents` to confirm the MCP connection is working. This is the **only** reliable way to check — actually call an MCP tool and see if it succeeds.
 
 ### Step 2: Identify the goal
 
