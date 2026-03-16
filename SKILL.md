@@ -9,29 +9,38 @@ metadata:
 
 The Relevance AI MCP integration enables building and managing AI agent systems. Connect to your Relevance AI project to create agents, build tool workflows, orchestrate multi-agent pipelines, and manage knowledge tables.
 
+## Prerequisite: Relevance AI MCP Server
+
+**This skill requires the Relevance AI MCP server.** All operations — creating agents, building tools, managing workforces — use MCP tools. Without the MCP server connected, this skill cannot function.
+
+**Check if MCP is already connected:** Try calling `relevance_list_agents`. If the tool exists and returns results (or an empty list), MCP is working — skip to the Required Workflow below.
+
+**If the MCP tools are not available**, you MUST help the user set up the MCP server FIRST before doing anything else:
+
+1. **Add the MCP server:**
+   - Codex: `codex mcp add relevance-ai --url https://mcp.relevanceai.com/`
+   - Other tools: Add `https://mcp.relevanceai.com/` as a Streamable HTTP MCP server in the tool's MCP settings
+2. **Authenticate:**
+   - Codex: `codex mcp login relevance-ai` (opens browser OAuth flow)
+   - Other tools: Use your Relevance AI API key when prompted
+3. **Restart your tool** — MCP auth tokens are not picked up until restart. Tell the user: "Please restart and ask me again."
+
+**Do NOT proceed with any task until the MCP tools are available and responding.**
+
+See `reference/setup.md` for full setup details.
+
+### Codex-specific notes
+
+- **Do NOT use `codex mcp list` to check authentication status.** Remote MCP servers show `Auth: Unsupported` in the CLI — this is normal and does NOT mean auth failed. Always verify by calling an actual MCP tool.
+- **Never re-run `codex mcp login` if the user says they already completed OAuth.** If MCP calls fail after auth, tell the user to restart Codex — do not open a second login flow.
+
 ## Required Workflow
 
 **Follow these steps in order. Do not skip steps.**
 
-### Step 0: Set up Relevance AI MCP (if not already configured)
-
-Skip straight to Step 1 if the MCP server might already be configured — the only reliable way to check is to call an actual MCP tool.
-
-If MCP tool calls fail because the server is not configured, help the user add it. See `reference/setup.md` for setup instructions by tool.
-
-After setup, the user may need to restart their tool (e.g. Codex requires a full restart after OAuth login for auth tokens to take effect).
-
-**Do NOT attempt to call any MCP tools until the user confirms they have restarted.**
-
-#### Codex-specific note
-
-**Do NOT use `codex mcp list` to check authentication status.** Remote MCP servers like Relevance AI will show `Auth: Unsupported` in the CLI — this is normal and does NOT mean auth has failed. The CLI cannot detect OAuth state for remote servers. Ignore this status and try calling an actual MCP tool instead.
-
-**Never re-run `codex mcp login` if the user says they already completed OAuth.** If MCP calls return auth errors after the user has authenticated, tell them to restart Codex — do not open a second login flow.
-
 ### Step 1: Verify connectivity
 
-Call `relevance-ai:relevance_list_agents` to confirm the MCP connection is working. This is the **only** reliable way to check — actually call an MCP tool and see if it succeeds.
+Call `relevance_list_agents` to confirm the MCP connection is working. This is the **only** reliable way to check — actually call an MCP tool and see if it succeeds. If it fails, go back to the Prerequisite section above.
 
 ### Step 2: Identify the goal
 
